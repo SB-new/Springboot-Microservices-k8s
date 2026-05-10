@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: inventory-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: inventory_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d inventory_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: inventory-app
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_URL: jdbc:postgresql://postgres:5432/inventory_db
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      # Replace with: openssl rand -base64 32
+      JWT_SECRET: c2VjcmV0S2V5Rm9ySW52ZW50b3J5TWFuYWdlbWVudEFwaTIwMjRMb25nRW5vdWdo
+      JWT_EXPIRATION_MS: "86400000"
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
