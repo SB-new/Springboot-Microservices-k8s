@@ -309,3 +309,4 @@ GET /api/inventory?page=1&size=10&sort=lastUpdated,desc
 | `JWT_SECRET`          | built-in dev default (NOT secure)    | yes             |
 | `JWT_EXPIRATION_MS`   | `86400000` (24 h)                    | no              |
 | `SERVER_PORT`         | `8080`                               | no              |
+
